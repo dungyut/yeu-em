@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Happy Birthday</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      background: linear-gradient(135deg, #fff0f5, #ffe4e1);
+      overflow: hidden;
+    }
+    #app {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      text-align: center;
+    }
+    #text {
+      font-size: 2em;
+      color: #d6336c;
+      border: 2px solid #d6336c;
+      padding: 20px;
+      border-radius: 15px;
+      background: rgba(255, 255, 255, 0.7);
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      max-width: 80%;
+      margin-bottom: 20px;
+    }
+    #nextBtn {
+      padding: 10px 20px;
+      background-color: #ff69b4;
+      border: none;
+      color: white;
+      font-size: 1.2em;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    #cakeSection {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to bottom, #fff0f5, #ffe4e1);
+    }
+    #cake {
+      width: 200px;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+    #cake:hover {
+      transform: scale(1.1);
+    }
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+    #person3D {
+      display: none;
+      width: 100%;
+      height: 100vh;
+    }
+  </style>
+</head>
+<body>
+  <audio autoplay loop id="bgMusic">
+    <source src="sn.mp3" type="audio/mpeg">
+  </audio>
+
+  <div id="app">
+    <div id="text"></div>
+    <button id="nextBtn">Tiếp theo</button>
+  </div>
+
+  <div id="cakeSection">
+    <img id="cake" src="cake.png" alt="Birthday Cake">
+    <canvas id="confetti"></canvas>
+    <div id="person3D"></div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vanta@0.5.24/dist/vanta.fog.min.js"></script>
+  <script>
+    const messages = [
+      "Chúc mừng sinh nhật cậu, người đặc biệt nhất 💖",
+    "Gửi cậu, người đặc biệt nhất trong ngày hôm nay..",
+    "cả thế giới dường như chậm đi 1 nhịp cõ lẽ chỉ vì cậu.",
+    "Cậu là người khách hàng đầu tiên mà tớ đã dành toàn bộ mọi sức mạnh nội tâm để lập trình ra web này",
+    "vậy nên có lẽ vẫn còn non nớt, tớ vẫn mong cậu có một trải ngiệm tốt cùng nó.",
+    "Chúc cậu sẽ thật vui vẻ khoác lên mình một phong thái rực rỡ nhất..",
+    "vì cậu là người tuyệt nhất ngày hôm nay.",
+    "dungyut",
+      "Hy vọng tuổi mới sẽ mang lại cho cậu thật nhiều niềm vui và bất ngờ!",
+      "Sẵn sàng chưa? Nhấn vào bánh kem nha!"
+    ];
+
+    const text = document.getElementById('text');
+    const nextBtn = document.getElementById('nextBtn');
+    const app = document.getElementById('app');
+    const cakeSection = document.getElementById('cakeSection');
+    const cake = document.getElementById('cake');
+    const person3D = document.getElementById('person3D');
+    let index = 0;
+
+    nextBtn.addEventListener('click', () => {
+      if (index < messages.length) {
+        typeWriter(messages[index], 0);
+        index++;
+      } else {
+        app.style.display = 'none';
+        cakeSection.style.display = 'flex';
+      }
+    });
+
+    function typeWriter(msg, i) {
+      if (i === 0) text.innerHTML = "";
+      if (i < msg.length) {
+        text.innerHTML += msg.charAt(i);
+        setTimeout(() => typeWriter(msg, i + 1), 40);
+      }
+    }
+
+    // Confetti effect
+    function launchConfetti() {
+      const canvas = document.getElementById('confetti');
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      const confettis = [];
+      for (let i = 0; i < 300; i++) {
+        confettis.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          r: Math.random() * 6 + 2,
+          d: Math.random() * 40,
+          color: `hsl(${Math.random() * 360}, 70%, 60%)`
+        });
+      }
+      let angle = 0;
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (let i = 0; i < confettis.length; i++) {
+          let c = confettis[i];
+          ctx.beginPath();
+          ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
+          ctx.fillStyle = c.color;
+          ctx.fill();
+        }
+        update();
+      }
+      function update() {
+        angle += 0.01;
+        for (let i = 0; i < confettis.length; i++) {
+          let c = confettis[i];
+          c.y += Math.cos(angle + c.d) + 1 + c.r / 2;
+          c.x += Math.sin(angle) * 2;
+          if (c.y > canvas.height) {
+            c.y = 0;
+            c.x = Math.random() * canvas.width;
+          }
+        }
+      }
+      setInterval(draw, 33);
+      setTimeout(() => {
+        canvas.style.display = 'none';
+        init3D();
+      }, 3000);
+    }
+
+    cake.addEventListener('click', () => {
+      launchConfetti();
+    });
+
+    // 3D effect with image
+    function init3D() {
+      person3D.style.display = 'block';
+      VANTA.FOG({
+        el: "#person3D",
+        highlightColor: 0xffcccc,
+        midtoneColor: 0xffaaff,
+        lowlightColor: 0xffe4e1,
+        baseColor: 0xffffff,
+        blurFactor: 0.7,
+        speed: 1.2,
+        zoom: 1.5,
+        THREE: THREE
+      });
+
+      const img = document.createElement('img');
+      img.src = 'person.png';
+      img.style.width = '300px';
+      img.style.height = 'auto';
+      img.style.position = 'absolute';
+      img.style.top = '50%';
+      img.style.left = '50%';
+      img.style.transform = 'translate(-50%, -50%)';
+      img.style.borderRadius = '20px';
+      img.style.boxShadow = '0 0 20px rgba(0,0,0,0.3)';
+      person3D.appendChild(img);
+    }
+  </script>
+</body>
+</html>
