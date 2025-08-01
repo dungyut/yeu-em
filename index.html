@@ -1,103 +1,146 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Happy Birthday</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chúc mừng sinh nhật!</title>
   <style>
-    body, html {
+    html, body {
       margin: 0;
       padding: 0;
-      height: 100%;
-      font-family: 'Comic Sans MS', cursive, sans-serif;
-      background: linear-gradient(135deg, #fff0f5, #ffe4e1);
+      background: linear-gradient(to bottom, #ffe6f0, #fff);
+      font-family: 'Segoe UI', cursive;
       overflow: hidden;
     }
+
     #app {
       display: flex;
-      flex-direction: column;
       justify-content: center;
       align-items: center;
-      height: 100%;
+      height: 100vh;
       text-align: center;
-    }
-    #text {
-      font-size: 2em;
-      color: #d6336c;
-      border: 2px solid #d6336c;
-      padding: 20px;
-      border-radius: 15px;
-      background: rgba(255, 255, 255, 0.7);
-      box-shadow: 0 0 15px rgba(0,0,0,0.1);
-      max-width: 80%;
-      margin-bottom: 20px;
-    }
-    #nextBtn {
-      padding: 10px 20px;
-      background-color: #ff69b4;
-      border: none;
-      color: white;
-      font-size: 1.2em;
-      border-radius: 10px;
-      cursor: pointer;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    }
-    #cakeSection {
-      display: none;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      position: absolute;
+    }
+
+    .message {
+      font-size: 28px;
+      color: #d63384;
+      margin: 20px;
+      border: 2px dashed #ff69b4;
+      padding: 20px;
+      border-radius: 20px;
+      background-color: #fff0f5;
+      box-shadow: 0 0 10px rgba(255, 105, 180, 0.3);
+    }
+
+    .button {
+      background: #ff69b4;
+      color: white;
+      padding: 10px 25px;
+      font-size: 18px;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: background 0.3s ease;
+    }
+
+    .button:hover {
+      background: #ff1493;
+    }
+
+    #cake {
+      width: 300px;
+      cursor: pointer;
+      display: none;
+      animation: bounce 1.5s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    #confetti {
+      position: fixed;
       top: 0;
       left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(to bottom, #fff0f5, #ffe4e1);
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 999;
     }
-    #cake {
-      width: 200px;
-      cursor: pointer;
-      transition: transform 0.3s;
+
+    #person {
+      display: none;
+      width: 250px;
+      margin-top: 20px;
+      border: 10px solid #fff;
+      box-shadow: 0 0 20px #fff, 0 0 40px #ff00cc;
+      border-radius: 15px;
+      animation: spin 8s linear infinite;
     }
-    #cake:hover {
-      transform: scale(1.1);
+
+    @keyframes spin {
+      0% { transform: rotateY(0deg); }
+      100% { transform: rotateY(360deg); }
     }
-    canvas {
+
+    #rain-container {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
       pointer-events: none;
+      z-index: 998;
     }
-    #person3D {
-      display: none;
-      width: 100%;
-      height: 100vh;
+
+    .rain {
+      position: absolute;
+      font-size: 20px;
+      color: #fff;
+      text-shadow: 0 0 5px #fff, 0 0 10px #0ff;
+      animation: drop 4s linear infinite;
+      opacity: 0.9;
+    }
+
+    @keyframes drop {
+      0% {
+        top: -10%;
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      100% {
+        top: 110%;
+        opacity: 0;
+      }
+    }
+
+    body.dark {
+      background: radial-gradient(#000000, #1a001a);
     }
   </style>
 </head>
 <body>
-  <audio autoplay loop id="bgMusic">
-    <source src="sn.mp3" type="audio/mpeg">
-  </audio>
+  <audio id="bgm" src="sn.mp3" autoplay loop></audio>
 
   <div id="app">
-    <div id="text"></div>
-    <button id="nextBtn">Tiếp theo</button>
+    <div class="message" id="message">Bắt đầu lời chúc nhé~</div>
+    <button class="button" id="next">Tiếp theo</button>
+    <button class="button" id="cakeBtn" style="display:none;">Bánh kem</button>
+    <img src="cake.png" id="cake" />
+    <img src="person.png" id="person" />
   </div>
 
-  <div id="cakeSection">
-    <img id="cake" src="cake.png" alt="Birthday Cake">
-    <canvas id="confetti"></canvas>
-    <div id="person3D"></div>
-  </div>
+  <canvas id="confetti"></canvas>
+  <div id="rain-container"></div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/vanta@0.5.24/dist/vanta.fog.min.js"></script>
   <script>
     const messages = [
-      "Chúc mừng sinh nhật cậu, người đặc biệt nhất 💖",
+     "Chúc mừng sinh nhật cậu, người đặc biệt nhất 💖",
     "Gửi cậu, người đặc biệt nhất trong ngày hôm nay..",
     "cả thế giới dường như chậm đi 1 nhịp cõ lẽ chỉ vì cậu.",
     "Cậu là người khách hàng đầu tiên mà tớ đã dành toàn bộ mọi sức mạnh nội tâm để lập trình ra web này",
@@ -109,109 +152,87 @@
       "Sẵn sàng chưa? Nhấn vào bánh kem nha!"
     ];
 
-    const text = document.getElementById('text');
-    const nextBtn = document.getElementById('nextBtn');
-    const app = document.getElementById('app');
-    const cakeSection = document.getElementById('cakeSection');
-    const cake = document.getElementById('cake');
-    const person3D = document.getElementById('person3D');
-    let index = 0;
+    let current = 0;
+    const messageEl = document.getElementById("message");
+    const nextBtn = document.getElementById("next");
+    const cakeBtn = document.getElementById("cakeBtn");
+    const cake = document.getElementById("cake");
+    const person = document.getElementById("person");
+    const confettiCanvas = document.getElementById("confetti");
+    const rainContainer = document.getElementById("rain-container");
 
-    nextBtn.addEventListener('click', () => {
-      if (index < messages.length) {
-        typeWriter(messages[index], 0);
-        index++;
+    nextBtn.addEventListener("click", () => {
+      current++;
+      if (current < messages.length) {
+        messageEl.textContent = messages[current];
       } else {
-        app.style.display = 'none';
-        cakeSection.style.display = 'flex';
+        nextBtn.style.display = "none";
+        cakeBtn.style.display = "inline-block";
       }
     });
 
-    function typeWriter(msg, i) {
-      if (i === 0) text.innerHTML = "";
-      if (i < msg.length) {
-        text.innerHTML += msg.charAt(i);
-        setTimeout(() => typeWriter(msg, i + 1), 40);
-      }
-    }
+    cakeBtn.addEventListener("click", () => {
+      messageEl.style.display = "none";
+      cakeBtn.style.display = "none";
+      cake.style.display = "block";
+    });
 
-    // Confetti effect
-    function launchConfetti() {
-      const canvas = document.getElementById('confetti');
-      const ctx = canvas.getContext('2d');
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      const confettis = [];
+    cake.addEventListener("click", () => {
+      cake.style.display = "none";
+      triggerConfetti();
+      document.body.classList.add("dark");
+      person.style.display = "block";
+      startRain();
+    });
+
+    // Confetti
+    function triggerConfetti() {
+      const ctx = confettiCanvas.getContext("2d");
+      confettiCanvas.width = window.innerWidth;
+      confettiCanvas.height = window.innerHeight;
+      let pieces = [];
       for (let i = 0; i < 300; i++) {
-        confettis.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
-          r: Math.random() * 6 + 2,
-          d: Math.random() * 40,
-          color: `hsl(${Math.random() * 360}, 70%, 60%)`
+        pieces.push({
+          x: Math.random() * confettiCanvas.width,
+          y: Math.random() * confettiCanvas.height - confettiCanvas.height,
+          color: `hsl(${Math.random()*360}, 100%, 60%)`,
+          size: Math.random() * 10 + 5,
+          speed: Math.random() * 5 + 2
         });
       }
-      let angle = 0;
+
       function draw() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        for (let i = 0; i < confettis.length; i++) {
-          let c = confettis[i];
+        ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+        pieces.forEach(p => {
+          ctx.fillStyle = p.color;
           ctx.beginPath();
-          ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
-          ctx.fillStyle = c.color;
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
           ctx.fill();
-        }
-        update();
-      }
-      function update() {
-        angle += 0.01;
-        for (let i = 0; i < confettis.length; i++) {
-          let c = confettis[i];
-          c.y += Math.cos(angle + c.d) + 1 + c.r / 2;
-          c.x += Math.sin(angle) * 2;
-          if (c.y > canvas.height) {
-            c.y = 0;
-            c.x = Math.random() * canvas.width;
+          p.y += p.speed;
+          if (p.y > confettiCanvas.height) {
+            p.y = -10;
+            p.x = Math.random() * confettiCanvas.width;
           }
-        }
+        });
+        requestAnimationFrame(draw);
       }
-      setInterval(draw, 33);
-      setTimeout(() => {
-        canvas.style.display = 'none';
-        init3D();
-      }, 3000);
+
+      draw();
     }
 
-    cake.addEventListener('click', () => {
-      launchConfetti();
-    });
+    // Mưa chữ
+    const rainChars = ["🎉", "snvv", "happy", "tuổi mới xinh", "💖", "✨", "🥳","VMTTWthor","dungyut yeu cau"];
 
-    // 3D effect with image
-    function init3D() {
-      person3D.style.display = 'block';
-      VANTA.FOG({
-        el: "#person3D",
-        highlightColor: 0xffcccc,
-        midtoneColor: 0xffaaff,
-        lowlightColor: 0xffe4e1,
-        baseColor: 0xffffff,
-        blurFactor: 0.7,
-        speed: 1.2,
-        zoom: 1.5,
-        THREE: THREE
-      });
-
-      const img = document.createElement('img');
-      img.src = 'person.png';
-      img.style.width = '300px';
-      img.style.height = 'auto';
-      img.style.position = 'absolute';
-      img.style.top = '50%';
-      img.style.left = '50%';
-      img.style.transform = 'translate(-50%, -50%)';
-      img.style.borderRadius = '20px';
-      img.style.boxShadow = '0 0 20px rgba(0,0,0,0.3)';
-      person3D.appendChild(img);
+    function startRain() {
+      for (let i = 0; i < 100; i++) {
+        const drop = document.createElement("div");
+        drop.classList.add("rain");
+        drop.style.left = Math.random() * window.innerWidth + "px";
+        drop.style.animationDuration = 2 + Math.random() * 3 + "s";
+        drop.textContent = rainChars[Math.floor(Math.random() * rainChars.length)];
+        drop.style.color = `hsl(${Math.random()*360}, 100%, 70%)`;
+        rainContainer.appendChild(drop);
+      }
     }
   </script>
 </body>
