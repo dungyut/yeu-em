@@ -32,7 +32,7 @@
         }
 
         .wish-text {
-            font-size: 2.5rem;
+            font-size: 2rem;
             color: #d63384;
             margin: 20px;
             opacity: 0;
@@ -44,6 +44,9 @@
                 -2px 2px 0px #fff;
             position: relative;
             display: none;
+            max-width: 90%;
+            text-align: center;
+            line-height: 1.4;
         }
 
         .wish-text::after {
@@ -251,8 +254,9 @@
         /* Mobile Touch Controls */
         @media (max-width: 768px) {
             .wish-text {
-                font-size: 1.8rem;
+                font-size: 1.5rem;
                 margin: 15px;
+                max-width: 95%;
             }
             
             .photo-frame {
@@ -274,10 +278,16 @@
 <body>
     <!-- Phase 1: Wishes -->
     <div class="wishes-container" id="wishesContainer">
-        <div class="wish-text" id="wish1">🎉 Chúc mừng sinh nhật! 🎉</div>
-        <div class="wish-text" id="wish2">Chúc bạn luôn khỏe mạnh và hạnh phúc!</div>
-        <div class="wish-text" id="wish3">Mong tất cả ước mơ của bạn đều thành hiện thực!</div>
-        <div class="wish-text" id="wish4">Sinh nhật vui vẻ nhé! 🎂✨</div>
+        <div class="wish-text" id="wish1">Chúc mừng sinh nhật cậu, người đặc biệt nhất 🎉</div>
+        <div class="wish-text" id="wish2">Gửi cậu, người đặc biệt nhất trong ngày hôm nay..</div>
+        <div class="wish-text" id="wish3">cả thế giới dường như chậm đi 1 nhịp có lẽ chỉ vì cậu.</div>
+        <div class="wish-text" id="wish4">Cậu là người khách hàng đầu tiên mà tớ đã dành toàn bộ mọi sức mạnh nội tâm để lập trình ra web này</div>
+        <div class="wish-text" id="wish5">vậy nên có lẽ vẫn còn non nớt, tớ vẫn mong cậu có một trải nghiệm tốt cùng nó.</div>
+        <div class="wish-text" id="wish6">Chúc cậu sẽ thật vui vẻ khoác lên mình một phong thái rực rỡ nhất..</div>
+        <div class="wish-text" id="wish7">vì cậu là người tuyệt nhất ngày hôm nay.</div>
+        <div class="wish-text" id="wish8">dungyut ✨</div>
+        <div class="wish-text" id="wish9">Hy vọng tuổi mới sẽ mang lại cho cậu thật nhiều niềm vui và bất ngờ!</div>
+        <div class="wish-text" id="wish10">Sẵn sàng chưa? Nhấn vào bánh kem nha! 🎂</div>
         <button class="next-button" id="nextBtn" style="display: none;">Tiếp theo</button>
         <button class="cake-button" id="cakeBtn" style="display: none;">🎂 BÁNH KEM 🎂</button>
     </div>
@@ -300,8 +310,8 @@
     <script>
         let currentWish = 0;
         let musicPlayed = false;
-        const wishes = ['wish1', 'wish2', 'wish3', 'wish4'];
-        const rainTexts = ['🎉', '🎂', '🎈', '🎁', '⭐', '💝', '🌟', '💫', '🎊', '🎀'];
+        const wishes = ['wish1', 'wish2', 'wish3', 'wish4', 'wish5', 'wish6', 'wish7', 'wish8', 'wish9', 'wish10'];
+        const rainTexts = ['🎉', '🎂', '🎈', '🎁', '⭐', '💝', '🌟', '💫', '🎊', '🎀',"VMTTwThor","to yeu cau","SNVV nhaa"];
         const colors = ['#ff6b9d', '#ffc3d8', '#ff9a9e', '#fecfef', '#d63384', '#ffb3d9'];
 
         // Touch controls for mobile 3D effect
@@ -595,6 +605,3 @@
     </script>
 </body>
 </html>
-</body>
-</html>
-
